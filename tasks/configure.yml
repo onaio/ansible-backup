@@ -52,3 +52,10 @@
 
 - name: backup-configure | Configure logrotate
   template: src=logrotate.j2 dest=/etc/logrotate.d/backup owner=root group=root mode=0644
+
+- name: backup-configure | test backup
+  become: true
+  become_user: "{{item.user|default(backup_user)}}"
+  shell: "echo '{{backup_gpg_pw}}' | duply {{item.name}} backup"
+  with_items: "{{backup_profiles}}"
+  when: backup_initial_run
