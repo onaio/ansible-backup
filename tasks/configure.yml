@@ -53,6 +53,22 @@
 - name: backup-configure | Configure logrotate
   template: src=logrotate.j2 dest=/etc/logrotate.d/backup owner=root group=root mode=0644
 
+- name: backup-configure | Copy the GPG public key into the profile
+  become: true
+  become_user: "{{item.user|default(backup_user)}}"
+  copy: dest={{backup_home}}/{{item.name}}/gpgkey.{{item.gpg_key}}.pub.asc src={{item.gpg_public_key_src}} mode=0700
+  become_user: "{{item.user|default(backup_user)}}"
+  with_items: "{{backup_profiles}}"
+  when: item.gpg_public_key_src is defined
+
+- name: backup-configure | Copy the GPG private key into the profile
+  become: true
+  become_user: "{{item.user|default(backup_user)}}"
+  copy: dest={{backup_home}}/{{item.name}}/gpgkey.{{item.gpg_key}}.sec.asc src={{item.gpg_private_key_src}} mode=0700
+  become_user: "{{item.user|default(backup_user)}}"
+  with_items: "{{backup_profiles}}"
+  when: item.gpg_private_key_src is defined
+
 - name: backup-configure | test backup
   become: true
   become_user: "{{item.user|default(backup_user)}}"

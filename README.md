@@ -64,6 +64,23 @@ backup_profiles: []           # Setup backup profiles
 backup_gpg_key: disabled
 backup_gpg_pw: ""
 backup_gpg_opts: ''
+# within profiles, you can add gpg_public_key_src and gpg_private_key_src with the paths to files
+# with the public and private key files to import them into the profile's directory. This is required
+# for the backup test task to run (when GPG keys are used)
+backup_profiles:
+  - name: "backup-profile-0"
+    schedule: 0 1 * * *
+    source: "postgresql://test-database"
+    target: "file:///backups/test-database"
+    max_age: "1M"
+    full_max_age: "1W"
+    max_full_backups: 4
+    user: "postgres"
+    gpg_key: "DDEF2FE"
+    gpg_pw: "somepassword"
+    gpg_opts: "--pinentry-mode loopback"
+    gpg_private_key_src: "files/priv-key.asc"
+    gpg_public_key_src: "files/pub-key.asc"
 
 # TARGET
 # syntax is
