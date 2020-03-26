@@ -41,6 +41,13 @@ mongodump --out $WORKDIR/dump $ARGS
 
 {% endif %}
 
-{% for action in item.pre_actions|default([]) %}
-{{ action }}
+{% for _backup_hook_action in item.pre_actions|default([]) %}
+{% if _backup_hook_action is defined and _backup_hook_action is iterable and _backup_hook_action is not string %}
+{% if _backup_hook_action.type == "command" %}
+{{_backup_hook_action.command}}
+{% endif %}
+{% if _backup_hook_action.type == "email" %}
+{{backup_home}}/{{_backup_profile_name}}/email-notification-pre-{{_backup_hook_action.name}}
+{% endif %}
+{% endif %}
 {% endfor %}
