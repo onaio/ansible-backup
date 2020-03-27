@@ -70,7 +70,8 @@ backup_profiles: []           # Setup backup profiles
 # Sample pre_action or post_actions list
 # post_actions:
 #   - type: command
-#     command: "echo 'Backup failed'"
+#     on_error:
+#       command: "echo 'Backup failed'"
 #   - type: email
 #     name: ona
 #     to: "info@ona.io"
