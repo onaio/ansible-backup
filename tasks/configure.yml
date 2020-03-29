@@ -25,12 +25,8 @@
   template: src=exclude.j2 dest={{backup_home}}/{{item.name}}/exclude owner={{item.user|default(backup_user)}} group={{item.group|default(backup_group)}} 
   with_items: "{{backup_profiles}}"
 
-- name: backup-configure | Configure pre scripts
-  template: src=pre.j2 dest={{backup_home}}/{{item.name}}/pre owner={{item.user|default(backup_user)}} group={{item.group|default(backup_group)}} 
-  with_items: "{{backup_profiles}}"
-
-- name: backup-configure | Configure post scripts
-  template: src=post.j2 dest={{backup_home}}/{{item.name}}/post owner={{item.user|default(backup_user)}} group={{item.group|default(backup_group)}} 
+- name: backup-configure | Configure pre and post hooks
+  include_tasks: configure-hooks.yml
   with_items: "{{backup_profiles}}"
 
 - name: backup-configure | Configure restore scripts

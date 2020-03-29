@@ -1,0 +1,29 @@
+---
+- set_fact:
+    _backup_profile_name: "{{item.name}}"
+    _backup_profile_user: "{{item.user|default(backup_user)}}"
+    _backup_profile_group: "{{item.group|default(backup_group)}}"
+    _backup_action_type: "pre"
+
+- name: backup-configure | Configure pre scripts
+  template: src=pre.j2 dest={{backup_home}}/{{item.name}}/pre owner={{item.user|default(backup_user)}} group={{item.group|default(backup_group)}} 
+
+- name: backup-configure | Configure profile pre actions
+  include_tasks: configure-hook-actions.yml
+  with_items: "{{item.pre_actions}}"
+  when: item.pre_actions is defined
+  loop_control:
+    loop_var: "_backup_hook_action"
+
+- set_fact:
+    _backup_action_type: "post"
+
+- name: backup-configure | Configure post scripts
+  template: src=post.j2 dest={{backup_home}}/{{item.name}}/post owner={{item.user|default(backup_user)}} group={{item.group|default(backup_group)}}
+
+- name: backup-configure | Configure profile post actions
+  include_tasks: configure-hook-actions.yml
+  with_items: "{{item.post_actions}}"
+  when: item.post_actions is defined
+  loop_control:
+    loop_var: "_backup_hook_action"

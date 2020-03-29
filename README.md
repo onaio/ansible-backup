@@ -60,6 +60,35 @@ backup_profiles: []           # Setup backup profiles
 # =======================================================
 # (every value can be replaced in jobs individually)
 
+# In each of your backup profiles, you can define pre backup and post backup actions to
+# be executed. Do this by declaring a pre_actions and post_actions lists.
+#
+# The following are supported action types:
+#   command: Run a shell command
+#   email: Send an email
+# 
+# Sample pre_action or post_actions list
+# post_actions:
+#   - type: command
+#     on_error:
+#       command: "echo 'Backup failed'"
+#   - type: email
+#     name: ona
+#     to: "info@ona.io"
+#     from: "server1@ona.io"
+#     smtp:
+#       port:
+#       host:
+#       user:
+#       password:
+#       use_startls: true
+#     on_error:
+#       subject: ""
+#       message: ""
+#     on_success:
+#       subject: ""
+#       message: ""
+
 # GPG
 backup_gpg_key: disabled
 backup_gpg_pw: ""

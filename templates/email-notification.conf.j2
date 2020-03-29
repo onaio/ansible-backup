@@ -1,0 +1,7 @@
+mailhub={{_backup_hook_action.smtp.host}}:{{_backup_hook_action.smtp.port}}
+{% if _backup_hook_action.smtp.use_startls %}
+useSTARTTLS=YES
+{% endif %}
+AuthUser={{_backup_hook_action.smtp.user}}
+AuthPass={{_backup_hook_action.smtp.password}}
+FromLineOverride=YES

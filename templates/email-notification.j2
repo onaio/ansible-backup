@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+#############################################################################
+# This file is responsible for sending email notifications and is intented  #
+# to be fired from either the pre or post hooks.                            #
+#                                                                           #
+# The script relies on the $CMD_ERR environment variable to determine       #
+# whether the previous command (in the case of the post hook this will be   #
+# the backup command and for the pre-hook this will be defaulted to 0 to    #
+# assume success).                                                          #
+#############################################################################
+
+TO="{{_backup_hook_action.to}}"
+FROM="{{_backup_hook_action.from}}"
+EMAIL_PREV_CMD_ERR=${CMD_ERR:-0}
+
+{% if _backup_hook_action.on_success is defined %}
+if [ "$EMAIL_PREV_CMD_ERR" -eq "0" ]; then
+SUBJECT="{{_backup_hook_action.on_success.subject}}"
+MESSAGE="To: ${TO}
+From: ${FROM}
+Subject: ${SUBJECT}
+{{_backup_hook_action.on_success.message}}"
+
+echo "$MESSAGE" | ssmtp -C {{backup_home}}/{{_backup_profile_name}}/email-notification-{{_backup_action_type}}-{{_backup_hook_action.name}}.conf -vvv ${TO}
+fi
+{% endif %}
+
+{% if _backup_hook_action.on_error is defined %}
+if [ "$EMAIL_PREV_CMD_ERR" -ne "0" ]; then
+SUBJECT="{{_backup_hook_action.on_error.subject}}"
+MESSAGE="To: ${TO}
+From: ${FROM}
+Subject: ${SUBJECT}
+{{_backup_hook_action.on_error.message}}"
+
+echo "$MESSAGE" | ssmtp -C {{backup_home}}/{{_backup_profile_name}}/email-notification-{{_backup_action_type}}-{{_backup_hook_action.name}}.conf -vvv ${TO}
+fi
+{% endif %}
