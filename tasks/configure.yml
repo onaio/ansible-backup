@@ -1,4 +1,6 @@
 ---
+- set_fact:
+    _backup_profile_name: "" # Initialize to a blank string
 
 - name: backup-configure | Ensure for backup user is exists
   user: name={{backup_user}}
@@ -13,61 +15,13 @@
 - name: backup-configure | Install duply
   template: src=duply.sh.j2 dest=/usr/bin/duply owner={{backup_user}} group={{backup_group}} mode=0755
 
-- name: backup-configure | Create profile directories
-  file: path={{backup_home}}/{{item.name}} state=directory mode=0700 owner={{item.user|default(backup_user)}} group={{item.group|default(backup_group)}} 
-  with_items: "{{backup_profiles}}"
-
-- name: backup-configure | Configure profiles
-  template: src=conf.j2 dest={{backup_home}}/{{item.name}}/conf owner={{item.user|default(backup_user)}} group={{item.group|default(backup_group)}} 
-  with_items: "{{backup_profiles}}"
-
-- name: backup-configure | Configure exclude lists
-  template: src=exclude.j2 dest={{backup_home}}/{{item.name}}/exclude owner={{item.user|default(backup_user)}} group={{item.group|default(backup_group)}} 
-  with_items: "{{backup_profiles}}"
-
-- name: backup-configure | Configure pre and post hooks
-  include_tasks: configure-hooks.yml
-  with_items: "{{backup_profiles}}"
-
-- name: backup-configure | Configure restore scripts
-  template: src=restore.j2 dest={{backup_home}}/{{item.name}}/restore owner={{item.user|default(backup_user)}} group={{item.group|default(backup_group)}} 
-  with_items: "{{backup_profiles}}"
-
-- name: backup-configure | Create work directories
-  file: state=directory path={{backup_work}}/{{item.name}} owner={{item.user|default(backup_user)}} group={{item.group|default(backup_group)}}  
-  with_items: "{{backup_profiles}}"
-
 - name: backup-configure | Setup cron
   template: src=cron.j2 dest=/etc/cron.d/{{backup_cron_filename}} owner=root group=root mode=0644
   when: backup_cron
 
-- name: backup-configure | Create log files
-  file: state=touch path={{backup_logdir}}/{{item.name}}.log owner={{item.user|default(backup_user)}} group={{item.group|default(backup_group)}}
-  with_items: "{{backup_profiles}}"
-  changed_when: False
-
 - name: backup-configure | Configure logrotate
   template: src=logrotate.j2 dest=/etc/logrotate.d/backup owner=root group=root mode=0644
 
-- name: backup-configure | Copy the GPG public key into the profile
-  become: true
-  become_user: "{{item.user|default(backup_user)}}"
-  copy: dest={{backup_home}}/{{item.name}}/gpgkey.{{item.gpg_key}}.pub.asc src={{item.gpg_public_key_src}} mode=0700
-  become_user: "{{item.user|default(backup_user)}}"
+- name: backup-configure | Configure backup profiles
+  include_tasks: configure-profile.yml
   with_items: "{{backup_profiles}}"
-  when: item.gpg_public_key_src is defined
-
-- name: backup-configure | Copy the GPG private key into the profile
-  become: true
-  become_user: "{{item.user|default(backup_user)}}"
-  copy: dest={{backup_home}}/{{item.name}}/gpgkey.{{item.gpg_key}}.sec.asc src={{item.gpg_private_key_src}} mode=0700
-  become_user: "{{item.user|default(backup_user)}}"
-  with_items: "{{backup_profiles}}"
-  when: item.gpg_private_key_src is defined
-
-- name: backup-configure | test backup
-  become: true
-  become_user: "{{item.user|default(backup_user)}}"
-  shell: "echo '{{backup_gpg_pw}}' | duply {{item.name}} backup"
-  with_items: "{{backup_profiles}}"
-  when: backup_initial_run
