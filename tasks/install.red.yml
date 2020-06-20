@@ -23,7 +23,7 @@
     - ssmtp
 
 - set_fact: backup_duplicity_pkg="{{backup_duplicity_pkg}}-{{backup_duplicity_version}}"
-  when: backup_duplicity_version
+  when: backup_duplicity_version|bool
 
 - name: Install duplicity
   yum: name={{backup_duplicity_pkg}}

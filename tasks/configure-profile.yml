@@ -12,10 +12,10 @@
   template: src=conf.j2 dest={{backup_home}}/{{item.name}}/conf owner={{_backup_profile_user}} group={{_backup_profile_group}}
 
 - name: backup-configure | Configure exclude lists
-  template: src=exclude.j2 dest={{backup_home}}/{{item.name}}/exclude owner={{_backup_profile_user}} group={{_backup_profile_group}} 
+  template: src=exclude.j2 dest={{backup_home}}/{{item.name}}/exclude owner={{_backup_profile_user}} group={{_backup_profile_group}}
 
 - name: backup-configure | Configure pre scripts
-  template: src=pre.j2 dest={{backup_home}}/{{item.name}}/pre owner={{_backup_profile_user}} group={{_backup_profile_group}} 
+  template: src=pre.j2 dest={{backup_home}}/{{item.name}}/pre owner={{_backup_profile_user}} group={{_backup_profile_group}}
 
 - name: backup-configure | Configure profile pre actions
   include_tasks: configure-hook-actions.yml
@@ -63,4 +63,4 @@
   become: true
   become_user: "{{_backup_profile_user}}"
   shell: "echo '{{backup_gpg_pw}}' | duply {{item.name}} backup"
-  when: backup_initial_run
+  when: backup_initial_run|bool
