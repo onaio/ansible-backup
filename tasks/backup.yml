@@ -1,13 +1,13 @@
 ---
 
 - include: install.deb.yml
-  when: ansible_os_family == "Debian" and not backup_remove
+  when: ansible_os_family == "Debian" and not backup_remove|bool
 
 - include: install.red.yml
-  when: ansible_os_family == "RedHat" and not backup_remove
+  when: ansible_os_family == "RedHat" and not backup_remove|bool
 
 - include: configure.yml
-  when: not backup_remove
+  when: not backup_remove|bool
 
 - include: remove.yml
-  when: backup_remove
+  when: backup_remove|bool
