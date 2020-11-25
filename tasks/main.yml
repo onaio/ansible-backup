@@ -1,4 +1,8 @@
 ---
+- include_vars: "{{ item }}"
+  with_first_found:
+    - "../vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+    - "../vars/default-distribution.yml"
 
 - include: backup.yml
   when: backup_enabled
