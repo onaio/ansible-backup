@@ -64,3 +64,5 @@
   become_user: "{{_backup_profile_user}}"
   shell: "echo '{{backup_gpg_pw}}' | duply {{item.name}} backup"
   when: backup_initial_run|bool
+  tags:
+    - molecule-idempotence-notest
