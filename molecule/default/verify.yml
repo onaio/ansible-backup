@@ -1,0 +1,20 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  tasks:
+    - name: Check duply is installed
+      ansible.builtin.command: which duply
+      changed_when: false
+
+    - name: Find backup volumes written by the initial run
+      ansible.builtin.find:
+        paths: /var/backup
+        recurse: true
+        patterns: "duplicity-*"
+      register: backup_files
+
+    - name: Assert the initial backup ran
+      ansible.builtin.assert:
+        that:
+          - backup_files.matched > 0

@@ -3,6 +3,8 @@
 dependencies: []
 
 galaxy_info:
+  role_name: backup
+  namespace: onaio
   author: klen
   company: Stouts
   description: Backup system. Files, dirs, databases. Upload to clouds.
