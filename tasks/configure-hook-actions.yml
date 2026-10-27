@@ -1,18 +1,19 @@
 ---
-- block:
-    - name: backup-configure | Copy the email hook configuration
-      template:
-        src: "email-notification.conf.j2"
-        dest: "{{backup_home}}/{{_backup_profile_name}}/email-notification-{{_backup_action_type}}-{{_backup_hook_action.name}}.conf"
-        owner: "{{_backup_profile_user}}"
-        group: "{{_backup_profile_group}}"
-        mode: 0600
-
-    - name: backup-configure | Copy the email hook script
-      template:
-        src: "email-notification.j2"
-        dest: "{{backup_home}}/{{_backup_profile_name}}/email-notification-{{_backup_action_type}}-{{_backup_hook_action.name}}"
-        owner: "{{_backup_profile_user}}"
-        group: "{{_backup_profile_group}}"
-        mode: 0700
+- name: Backup-configure | Configure the email hook
   when: _backup_hook_action.type == "email"
+  block:
+    - name: Backup-configure | Copy the email hook configuration
+      ansible.builtin.template:
+        src: "email-notification.conf.j2"
+        dest: "{{ backup_home }}/{{ _backup_profile_name }}/email-notification-{{ _backup_action_type }}-{{ _backup_hook_action.name }}.conf"
+        owner: "{{ _backup_profile_user }}"
+        group: "{{ _backup_profile_group }}"
+        mode: "0600"
+
+    - name: Backup-configure | Copy the email hook script
+      ansible.builtin.template:
+        src: "email-notification.j2"
+        dest: "{{ backup_home }}/{{ _backup_profile_name }}/email-notification-{{ _backup_action_type }}-{{ _backup_hook_action.name }}"
+        owner: "{{ _backup_profile_user }}"
+        group: "{{ _backup_profile_group }}"
+        mode: "0700"
