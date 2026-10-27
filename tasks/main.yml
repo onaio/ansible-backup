@@ -1,9 +1,11 @@
 ---
-- include_vars: "{{ item }}"
+- name: Load distribution variables
+  ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
     - "../vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
     - "../vars/default-distribution.yml"
 
-- include_tasks: backup.yml
-  when: backup_enabled|bool
+- name: Set up backups
+  ansible.builtin.include_tasks: backup.yml
+  when: backup_enabled | bool
   tags: [backup]

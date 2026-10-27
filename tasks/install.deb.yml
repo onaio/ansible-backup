@@ -1,13 +1,16 @@
 ---
-
-- include_vars: "{{ansible_distribution}}.yml"
+- name: Load distribution variables
+  ansible.builtin.include_vars: "{{ ansible_distribution }}.yml"
 
 - name: Install dependencies
-  apt:
+  ansible.builtin.apt:
     pkg: "{{ backup_apt_dependencies }}"
 
-- set_fact: backup_duplicity_pkg="{{backup_duplicity_pkg}}={{backup_duplicity_version}}"
-  when: backup_duplicity_version|bool
+- name: Pin the duplicity version
+  ansible.builtin.set_fact:
+    backup_duplicity_pkg: "{{ backup_duplicity_pkg }}={{ backup_duplicity_version }}"
+  when: backup_duplicity_version | bool
 
 - name: Install duplicity
-  apt: pkg={{backup_duplicity_pkg}}
+  ansible.builtin.apt:
+    pkg: "{{ backup_duplicity_pkg }}"

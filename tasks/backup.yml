@@ -1,13 +1,16 @@
 ---
+- name: Install backup tools on Debian
+  ansible.builtin.include_tasks: install.deb.yml
+  when: ansible_os_family == "Debian" and not backup_remove | bool
 
-- include_tasks: install.deb.yml
-  when: ansible_os_family == "Debian" and not backup_remove|bool
+- name: Install backup tools on RedHat
+  ansible.builtin.include_tasks: install.red.yml
+  when: ansible_os_family == "RedHat" and not backup_remove | bool
 
-- include_tasks: install.red.yml
-  when: ansible_os_family == "RedHat" and not backup_remove|bool
+- name: Configure backups
+  ansible.builtin.include_tasks: configure.yml
+  when: not backup_remove | bool
 
-- include_tasks: configure.yml
-  when: not backup_remove|bool
-
-- include_tasks: remove.yml
-  when: backup_remove|bool
+- name: Remove backups
+  ansible.builtin.include_tasks: remove.yml
+  when: backup_remove | bool
